@@ -6,6 +6,13 @@ class Hl < Formula
   license "MIT"
   head "https://github.com/pamburus/hl.git", branch: "master"
 
+  bottle do
+    root_url "https://github.com/pamburus/homebrew-tap/releases/download/hl-0.28.1"
+    sha256 cellar: :any_skip_relocation, arm64_sonoma: "66843d546897a0384f04ea3f4e27f4c5338c2558e790b549b3eb6927b4a870ef"
+    sha256 cellar: :any_skip_relocation, ventura:      "f4d2c977154649a5e0037e119bd9194703f56e5cc1daa04a8d48dcdd12e5ed3a"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "aebc0aa963371ce117bcb561bba21482252e05277124d9699d186ea4ee2a24ef"
+  end
+
   depends_on "rust" => :build
 
   def install
