@@ -1,17 +1,10 @@
 class Hl < Formula
   desc "Log viewer for JSON and logfmt logs"
   homepage "https://github.com/pamburus/hl"
-  url "https://github.com/pamburus/hl/archive/refs/tags/v0.28.1.tar.gz"
-  sha256 "e5e748f0d39dc2a2fa4ba126c86c0cf3af9b1f61d13dd17806c11cac3fce88d6"
+  url "https://github.com/pamburus/hl/archive/refs/tags/v0.29.1.tar.gz"
+  sha256 "f7f8fbf3e03b20e3f48346a1f8091b7f9fb3cabe91a72a36f1744db73c15f7c7"
   license "MIT"
   head "https://github.com/pamburus/hl.git", branch: "master"
-
-  bottle do
-    root_url "https://github.com/pamburus/homebrew-tap/releases/download/hl-0.28.1"
-    sha256 cellar: :any_skip_relocation, arm64_sonoma: "66843d546897a0384f04ea3f4e27f4c5338c2558e790b549b3eb6927b4a870ef"
-    sha256 cellar: :any_skip_relocation, ventura:      "f4d2c977154649a5e0037e119bd9194703f56e5cc1daa04a8d48dcdd12e5ed3a"
-    sha256 cellar: :any_skip_relocation, x86_64_linux: "aebc0aa963371ce117bcb561bba21482252e05277124d9699d186ea4ee2a24ef"
-  end
 
   depends_on "rust" => :build
 
