@@ -1,8 +1,8 @@
 class Hl < Formula
   desc "Log viewer for JSON and logfmt logs"
   homepage "https://github.com/pamburus/hl"
-  url "https://github.com/pamburus/hl/archive/refs/tags/v0.29.1.tar.gz"
-  sha256 "f7f8fbf3e03b20e3f48346a1f8091b7f9fb3cabe91a72a36f1744db73c15f7c7"
+  url "https://github.com/pamburus/hl/archive/refs/tags/v0.29.2.tar.gz"
+  sha256 "f8bf6f6f1917e7cdcb90b1b645a2380a37e021b8fea6b1bed6c1d4fb38689eed"
   license "MIT"
   head "https://github.com/pamburus/hl.git", branch: "master"
 
