@@ -1,14 +1,14 @@
 class Hl < Formula
   desc "Log viewer for JSON and logfmt logs"
   homepage "https://github.com/pamburus/hl"
-  version "0.29.2"
+  version "{{ VERSION }}"
   license "MIT"
-  head "https://github.com/pamburus/hl.git", branch: "master"
+  head "{{ REPOSITORY_URL }}", branch: "{{ HEAD_BRANCH }}"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/pamburus/hl/releases/download/v0.29.2/hl-macos-x86_64.tar.gz"
-      sha256 "a5ce909baad2ba125deccb5426e891d6e47def1756ae871a219e337c9fcbf094"
+      url "{{ ASSET_MACOS_AMD64_URL }}"
+      sha256 "{{ ASSET_MACOS_AMD64_SHA256 }}"
 
       def install
         bin.install "hl"
@@ -16,8 +16,8 @@ class Hl < Formula
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/pamburus/hl/releases/download/v0.29.2/hl-macos-arm64.tar.gz"
-      sha256 "638748cdd8f344db9e51ed486b863956139a9581b42d8c6ecd15c22176865cb9"
+      url "{{ ASSET_MACOS_ARM64_URL }}"
+      sha256 "{{ ASSET_MACOS_ARM64_SHA256 }}"
 
       def install
         bin.install "hl"
@@ -28,8 +28,8 @@ class Hl < Formula
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/pamburus/hl/releases/download/v0.29.2/hl-linux-x86_64-musl.tar.gz"
-      sha256 "7637f4b0616b810a4883ab7f29cded16c1099fcbb3ba767f2e1ae7f82f9fa237"
+      url "{{ ASSET_LINUX_AMD64_URL }}"
+      sha256 "{{ ASSET_LINUX_AMD64_SHA256 }}"
 
       def install
         bin.install "hl"
@@ -37,8 +37,8 @@ class Hl < Formula
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/pamburus/hl/releases/download/v0.29.2/hl-linux-arm64-musl.tar.gz"
-      sha256 "c30affd547b5bc33ac8d7f2d9b3f3728af29026d27409e64fb33ba7912874012"
+      url "{{ ASSET_LINUX_ARM64_URL }}"
+      sha256 "{{ ASSET_LINUX_ARM64_SHA256 }}"
 
       def install
         bin.install "hl"
