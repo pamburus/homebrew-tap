@@ -452,9 +452,9 @@ class Formula:
     def sync(self, force=False):
         '''Synchronize the formula with the latest release.'''
         if not force and self.version == self.target_version:
-            logging.debug('%s: already up-to-date', HL(self))
+            logging.debug('%s: already up-to-date', self)
             return
-        logging.info('Updating %s to version %s', HL(self), HL(self.version))
+        logging.info('Updating %s to version %s', self, HL(self.version))
         release = self.repo.release(self.version).resolved
         version = release.version
         assets = self.assets(release.name)
