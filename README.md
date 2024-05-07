@@ -1,4 +1,4 @@
-# Pamburus Tap
+# A homebrew tap
 
 ## How do I install these formulae?
 
