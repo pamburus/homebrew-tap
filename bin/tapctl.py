@@ -24,7 +24,7 @@ from functools import cached_property
 THIS_DIR = os.path.dirname(__file__)
 
 # Upstream repository of the homebrew tap.
-UPSTREAM_REPO = 'https://github.com/pamburus/homebrew-bin'
+UPSTREAM_REPO = 'https://github.com/pamburus/homebrew-tap'
 
 # Main branch of the repository.
 MAIN_BRANCH = 'main'
