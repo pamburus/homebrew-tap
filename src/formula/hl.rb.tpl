@@ -13,6 +13,7 @@ class Hl < Formula
       def install
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
+        (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
       end
     end
     if Hardware::CPU.arm?
@@ -22,6 +23,7 @@ class Hl < Formula
       def install
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
+        (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
       end
     end
   end
@@ -34,6 +36,7 @@ class Hl < Formula
       def install
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
+        (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
@@ -43,6 +46,7 @@ class Hl < Formula
       def install
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
+        (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
       end
     end
   end
