@@ -13,6 +13,7 @@ class Hl < Formula
       def install
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
+        system "mkdir man1"
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
         man.install "man1"
       end
@@ -24,6 +25,7 @@ class Hl < Formula
       def install
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
+        system "mkdir man1"
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
         man.install "man1"
       end
@@ -38,6 +40,7 @@ class Hl < Formula
       def install
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
+        system "mkdir man1"
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
         man.install "man1"
       end
@@ -49,6 +52,7 @@ class Hl < Formula
       def install
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
+        system "mkdir man1"
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
         man.install "man1"
       end
