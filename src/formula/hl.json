@@ -3,7 +3,7 @@
         "url": "https://github.com/pamburus/hl",
         "branch": "master"
     },
-    "version": "0.30.0",
+    "version": "0.30.1",
     "assets": [
         {
             "name": "hl-macos-arm64.tar.gz",
