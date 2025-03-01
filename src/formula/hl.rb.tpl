@@ -52,6 +52,6 @@ class Hl < Formula
   end
 
   test do
-    system "#{bin}/hl", "--version"
+    assert_match version.to_s, shell_output("#{bin}/hl --version")
   end
 end
