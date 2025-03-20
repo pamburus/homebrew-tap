@@ -1,0 +1,29 @@
+{
+  "repository": {
+    "url": "https://github.com/pamburus/termframe",
+    "branch": "main"
+  },
+  "version": "0.1.0",
+  "assets": [
+    {
+      "name": "termframe-macos-arm64.tar.gz",
+      "os": "macos",
+      "arch": "arm64"
+    },
+    {
+      "name": "termframe-macos-x86_64.tar.gz",
+      "os": "macos",
+      "arch": "amd64"
+    },
+    {
+      "name": "termframe-linux-arm64-musl.tar.gz",
+      "os": "linux",
+      "arch": "arm64"
+    },
+    {
+      "name": "termframe-linux-x86_64-musl.tar.gz",
+      "os": "linux",
+      "arch": "amd64"
+    }
+  ]
+}
