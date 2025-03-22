@@ -5,6 +5,13 @@ class Termframe < Formula
   license "MIT"
   head "https://github.com/pamburus/termframe.git", branch: "main"
 
+  bottle do
+    root_url "https://github.com/pamburus/homebrew-tap/releases/download/termframe-0.2.0"
+    sha256 cellar: :any_skip_relocation, arm64_sequoia: "13c0232664cd1ecee4eebbb560704a098ab2c641ec2002d45ddd0ed52c2d4b25"
+    sha256 cellar: :any_skip_relocation, arm64_sonoma:  "28de88c51692a0866dd06af9c6dd95085634b831aed5d1552690b21216598324"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "cecdc2f2f3c4ed3ccdf0d45d50271208518abaa7d100294de6577d9a4dd9b3ec"
+  end
+
   on_macos do
     if Hardware::CPU.intel?
       url "https://github.com/pamburus/termframe/releases/download/v0.2.0/termframe-macos-x86_64.tar.gz"
