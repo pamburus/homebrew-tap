@@ -454,7 +454,7 @@ class Formula:
         if not force and self.version == self.target_version:
             logging.debug('%s: already up-to-date', self)
             return
-        logging.info('Updating %s to version %s from %s', self, HL(self.version), HL(self.target_version))
+        logging.info('Updating %s from %s to %s', self, HL(self.target_version), HL(self.version))
         release = self.repo.release(self.version).resolved
         version = release.version
         assets = self.assets(release.name)
