@@ -5,6 +5,13 @@ class Hl < Formula
   license "MIT"
   head "https://github.com/pamburus/hl.git", branch: "master"
 
+  bottle do
+    root_url "https://github.com/pamburus/homebrew-tap/releases/download/hl-0.31.1"
+    sha256 cellar: :any_skip_relocation, arm64_sequoia: "e62c4da0d4c9929acfb0202d2fde261ca156e2b62d7f25f83f4bea5c302f0e6a"
+    sha256 cellar: :any_skip_relocation, arm64_sonoma:  "b22dfe0a23ffe4a47eb3cd2fb347e1b3e7535abb5a2f5a6c218a363253c1d68b"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "aac44b3543ad618bce6c77a7e4ef91a393d9673f058ede559a2def71e15667b4"
+  end
+
   on_macos do
     if Hardware::CPU.intel?
       url "https://github.com/pamburus/hl/releases/download/v0.31.1/hl-macos-x86_64.tar.gz"
