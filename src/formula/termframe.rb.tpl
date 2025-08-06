@@ -10,7 +10,7 @@ class Termframe < Formula
       url "{{ ASSET_MACOS_AMD64_URL }}"
       sha256 "{{ ASSET_MACOS_AMD64_SHA256 }}"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"termframe", "--shell-completions")
         (man1/"termframe.1").write Utils.safe_popen_read(bin/"termframe", "--man-page")
@@ -20,7 +20,7 @@ class Termframe < Formula
       url "{{ ASSET_MACOS_ARM64_URL }}"
       sha256 "{{ ASSET_MACOS_ARM64_SHA256 }}"
 
-      def install
+      define_method(:install) do
         bin.install "termframe"
         generate_completions_from_executable(bin/"termframe", "--shell-completions")
         (man1/"termframe.1").write Utils.safe_popen_read(bin/"termframe", "--man-page")
@@ -33,7 +33,7 @@ class Termframe < Formula
       url "{{ ASSET_LINUX_AMD64_URL }}"
       sha256 "{{ ASSET_LINUX_AMD64_SHA256 }}"
 
-      def install
+      define_method(:install) do
         bin.install "termframe"
         generate_completions_from_executable(bin/"termframe", "--shell-completions")
         (man1/"termframe.1").write Utils.safe_popen_read(bin/"termframe", "--man-page")
@@ -43,7 +43,7 @@ class Termframe < Formula
       url "{{ ASSET_LINUX_ARM64_URL }}"
       sha256 "{{ ASSET_LINUX_ARM64_SHA256 }}"
 
-      def install
+      define_method(:install) do
         bin.install "termframe"
         generate_completions_from_executable(bin/"termframe", "--shell-completions")
         (man1/"termframe.1").write Utils.safe_popen_read(bin/"termframe", "--man-page")

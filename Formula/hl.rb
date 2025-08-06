@@ -17,7 +17,7 @@ class Hl < Formula
       url "https://github.com/pamburus/hl/releases/download/v0.31.2/hl-macos-x86_64.tar.gz"
       sha256 "06217dde5469d5b259c1fa0c139def180db72fda6b2239228c0bed59a77c5c62"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
@@ -27,7 +27,7 @@ class Hl < Formula
       url "https://github.com/pamburus/hl/releases/download/v0.31.2/hl-macos-arm64.tar.gz"
       sha256 "e020641e59efbf563688ea5a86a5a2631f5ac9be03f7ae8be080aa76fb29f9c2"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
@@ -40,7 +40,7 @@ class Hl < Formula
       url "https://github.com/pamburus/hl/releases/download/v0.31.2/hl-linux-x86_64-musl.tar.gz"
       sha256 "738851e5b3ea23c51b1d484715cdc7f8eab343f20c569066e8124b36ac7934ef"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
@@ -50,7 +50,7 @@ class Hl < Formula
       url "https://github.com/pamburus/hl/releases/download/v0.31.2/hl-linux-arm64-musl.tar.gz"
       sha256 "07324020aba075b5e927abb6141ba8dd73b5b38c00a6dc15d8ec77dcfd5b9acc"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")

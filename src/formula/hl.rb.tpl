@@ -10,7 +10,7 @@ class Hl < Formula
       url "{{ ASSET_MACOS_AMD64_URL }}"
       sha256 "{{ ASSET_MACOS_AMD64_SHA256 }}"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
@@ -20,7 +20,7 @@ class Hl < Formula
       url "{{ ASSET_MACOS_ARM64_URL }}"
       sha256 "{{ ASSET_MACOS_ARM64_SHA256 }}"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
@@ -33,7 +33,7 @@ class Hl < Formula
       url "{{ ASSET_LINUX_AMD64_URL }}"
       sha256 "{{ ASSET_LINUX_AMD64_SHA256 }}"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
@@ -43,7 +43,7 @@ class Hl < Formula
       url "{{ ASSET_LINUX_ARM64_URL }}"
       sha256 "{{ ASSET_LINUX_ARM64_SHA256 }}"
 
-      def install
+      define_method(:install) do
         bin.install "hl"
         generate_completions_from_executable(bin/"hl", "--shell-completions")
         (man1/"hl.1").write Utils.safe_popen_read(bin/"hl", "--man-page")
