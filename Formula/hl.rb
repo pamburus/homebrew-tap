@@ -7,9 +7,10 @@ class Hl < Formula
 
   bottle do
     root_url "https://github.com/pamburus/homebrew-tap/releases/download/hl-0.31.2"
-    sha256 cellar: :any_skip_relocation, arm64_sequoia: "2b96cbcccb6591b95a6608ffb838430645df9d0e5258a47b4ab9553ae637be6a"
-    sha256 cellar: :any_skip_relocation, arm64_sonoma:  "18db5e6eba9c447d3d92db90ea5dacafbd32972e69840a54a8ea6739bd956b3d"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "fab5e5c86cd2403156bc0d1e56555fa5ae00e59aa4c1a0c2ace33f7731378616"
+    rebuild 1
+    sha256 cellar: :any_skip_relocation, arm64_sequoia: "0d5e5e8b813b1cde44b541add3c7a68de7d19539a64a1df6d55569c4963b2581"
+    sha256 cellar: :any_skip_relocation, arm64_sonoma:  "cee1a9d76108e80a4e1a6ac1904543f059270b1a582a4fa2f3002b3debbac089"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:  "ecb55e847a7334c13396c1a6eeb67f84120197956123755e12a2f2b4b1cd8213"
   end
 
   on_macos do
