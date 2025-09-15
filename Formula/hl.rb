@@ -1,22 +1,14 @@
 class Hl < Formula
   desc "Log viewer for JSON and logfmt logs"
   homepage "https://github.com/pamburus/hl"
-  version "0.31.2"
+  version "0.32.0"
   license "MIT"
   head "https://github.com/pamburus/hl.git", branch: "master"
 
-  bottle do
-    root_url "https://github.com/pamburus/homebrew-tap/releases/download/hl-0.31.2"
-    rebuild 1
-    sha256 cellar: :any_skip_relocation, arm64_sequoia: "0d5e5e8b813b1cde44b541add3c7a68de7d19539a64a1df6d55569c4963b2581"
-    sha256 cellar: :any_skip_relocation, arm64_sonoma:  "cee1a9d76108e80a4e1a6ac1904543f059270b1a582a4fa2f3002b3debbac089"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "ecb55e847a7334c13396c1a6eeb67f84120197956123755e12a2f2b4b1cd8213"
-  end
-
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/pamburus/hl/releases/download/v0.31.2/hl-macos-x86_64.tar.gz"
-      sha256 "06217dde5469d5b259c1fa0c139def180db72fda6b2239228c0bed59a77c5c62"
+      url "https://github.com/pamburus/hl/releases/download/v0.32.0/hl-macos-x86_64.tar.gz"
+      sha256 "91c7f5f14b3a28a0337614eff7c6ac84d4c12510ead5d044273b493283949eca"
 
       define_method(:install) do
         bin.install "hl"
@@ -25,8 +17,8 @@ class Hl < Formula
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/pamburus/hl/releases/download/v0.31.2/hl-macos-arm64.tar.gz"
-      sha256 "e020641e59efbf563688ea5a86a5a2631f5ac9be03f7ae8be080aa76fb29f9c2"
+      url "https://github.com/pamburus/hl/releases/download/v0.32.0/hl-macos-arm64.tar.gz"
+      sha256 "d6b5eb91f12c90d12b6f54dfec87a9c9ead43ecc9027582947ee4849c2424dc8"
 
       define_method(:install) do
         bin.install "hl"
@@ -38,8 +30,8 @@ class Hl < Formula
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/pamburus/hl/releases/download/v0.31.2/hl-linux-x86_64-musl.tar.gz"
-      sha256 "738851e5b3ea23c51b1d484715cdc7f8eab343f20c569066e8124b36ac7934ef"
+      url "https://github.com/pamburus/hl/releases/download/v0.32.0/hl-linux-x86_64-musl.tar.gz"
+      sha256 "36f6ad1fb279ff18ddfef9a113a08a7ba0480b5edbe3e010212d8e3850e05310"
 
       define_method(:install) do
         bin.install "hl"
@@ -48,8 +40,8 @@ class Hl < Formula
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/pamburus/hl/releases/download/v0.31.2/hl-linux-arm64-musl.tar.gz"
-      sha256 "07324020aba075b5e927abb6141ba8dd73b5b38c00a6dc15d8ec77dcfd5b9acc"
+      url "https://github.com/pamburus/hl/releases/download/v0.32.0/hl-linux-arm64-musl.tar.gz"
+      sha256 "95b98917d10292c08bfc0d10332b13c908cec152e2e21c8e074b85ce9600d42b"
 
       define_method(:install) do
         bin.install "hl"
