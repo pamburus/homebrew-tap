@@ -1,21 +1,14 @@
 class Termframe < Formula
   desc "Terminal output SVG screenshot tool"
   homepage "https://github.com/pamburus/termframe"
-  version "0.6.3"
+  version "0.6.4"
   license "MIT"
   head "https://github.com/pamburus/termframe.git", branch: "main"
 
-  bottle do
-    root_url "https://github.com/pamburus/homebrew-tap/releases/download/termframe-0.6.3"
-    sha256 cellar: :any_skip_relocation, arm64_sequoia: "667cbd6f0f9b3c24390c4fe26520f7398bfdc463a2f609eb0866992ebb5c80dd"
-    sha256 cellar: :any_skip_relocation, arm64_sonoma:  "8441a27c15e6afe24dcf6b13a47960f10a5665424c7d63da756bd99b8150b84e"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:  "fd5762c169419f285d39a31208442101f4a6a8fa7f0b3bb0a6aef22d6fffcfa5"
-  end
-
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/pamburus/termframe/releases/download/v0.6.3/termframe-macos-x86_64.tar.gz"
-      sha256 "39a302c37cf00704b05619594aa385c8d16b2b3da8aed0ced2b35baedd70a338"
+      url "https://github.com/pamburus/termframe/releases/download/v0.6.4/termframe-macos-x86_64.tar.gz"
+      sha256 "8c209f3d4f5fc150f3a5e97c4b911e78b46b74411d2de44ffcf8fa398ea55cad"
 
       define_method(:install) do
         bin.install "hl"
@@ -24,8 +17,8 @@ class Termframe < Formula
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/pamburus/termframe/releases/download/v0.6.3/termframe-macos-arm64.tar.gz"
-      sha256 "a20081e91064018d4fdbfb56be00bf749b559948545e2f0da07a6f9e1b248868"
+      url "https://github.com/pamburus/termframe/releases/download/v0.6.4/termframe-macos-arm64.tar.gz"
+      sha256 "8ce816540cfb2a7026ece4e7bbe5b1a3ea9c5b7aac0ab180d7c72c3fb3082cd0"
 
       define_method(:install) do
         bin.install "termframe"
@@ -37,8 +30,8 @@ class Termframe < Formula
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/pamburus/termframe/releases/download/v0.6.3/termframe-linux-x86_64-musl.tar.gz"
-      sha256 "00d8a5bda532d2c5863fa175c0b9ab393ca20727bfdeb7c50e48ffa1e955026d"
+      url "https://github.com/pamburus/termframe/releases/download/v0.6.4/termframe-linux-x86_64-musl.tar.gz"
+      sha256 "5f4bf5f83f5437501ff3a4cd24bc70493f89a93b8938696b0a93eb7388da77f1"
 
       define_method(:install) do
         bin.install "termframe"
@@ -47,8 +40,8 @@ class Termframe < Formula
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/pamburus/termframe/releases/download/v0.6.3/termframe-linux-arm64-musl.tar.gz"
-      sha256 "834de269245cde95a165c7314d54fc96a0b858c6be6bec09ea1fca164b241b0a"
+      url "https://github.com/pamburus/termframe/releases/download/v0.6.4/termframe-linux-arm64-musl.tar.gz"
+      sha256 "b943f8b7f56010cdab2df9118b204d616fce51e62b8aa2cf9326d11ad037e836"
 
       define_method(:install) do
         bin.install "termframe"
