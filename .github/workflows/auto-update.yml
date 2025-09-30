@@ -1,0 +1,32 @@
+name: Auto-update
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash -euxo pipefail {0}
+
+jobs:
+  update:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/git-user-config@master
+      - name: Update packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          brew tap ${{ github.repository }}
+          for formula in Formula/*.rb; do
+            package=$(basename "${formula:?}" .rb)
+            for version in $(brew livecheck --quiet --newer-only --json "${{ github.repository }}/${package}" | jq -r '.[].version.latest'); do
+              brew bump-formula-pr --no-browse --no-fork --version="${version:?}" "${{ github.repository }}/${package:?}"
+            done
+          done

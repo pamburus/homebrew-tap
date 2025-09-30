@@ -1,0 +1,26 @@
+name: Automerge
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  check_suite:
+    types: [completed]
+
+defaults:
+  run:
+    shell: bash -euxo pipefail {0}
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'github-actions[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Automerge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --auto --squash
