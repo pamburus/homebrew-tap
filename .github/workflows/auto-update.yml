@@ -17,12 +17,14 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
+      - run: git remote -v
       - uses: Homebrew/actions/setup-homebrew@master
       - uses: Homebrew/actions/git-user-config@master
       - name: Update packages
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
+          git remote -v
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "GitHub Actions"
           brew tap ${{ github.repository }}
