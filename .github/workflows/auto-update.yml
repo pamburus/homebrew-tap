@@ -60,7 +60,7 @@ jobs:
 
       - name: Build bottle
         env:
-          PACKAGE: ${{ matrix.update.package }}
+          PACKAGE: ${{ github.repository }}/${{ matrix.update.package }}
           VERSION: ${{ matrix.update.version }}
         run: |
           brew bump-formula-pr --write-only --version="$VERSION" --no-browse "$PACKAGE"
@@ -99,7 +99,7 @@ jobs:
 
       - name: Integrate and commit
         env:
-          PACKAGE: ${{ matrix.update.package }}
+          PACKAGE: ${{ github.repository }}/${{ matrix.update.package }}
           VERSION: ${{ matrix.update.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
