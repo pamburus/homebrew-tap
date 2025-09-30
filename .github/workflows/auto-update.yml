@@ -21,16 +21,17 @@ jobs:
       - uses: Homebrew/actions/git-user-config@master
       - name: Update packages
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          git status
-          git diff
           brew tap ${{ github.repository }}
           for formula in Formula/*.rb; do
             package=$(basename "${formula:?}" .rb)
             for version in $(brew livecheck --quiet --newer-only --json "${{ github.repository }}/${package}" | jq -r '.[].version.latest'); do
               gh pr list --search "${package}: update" --state open --json number | jq -e '.[] | select(.number)' >/dev/null && continue
-              git status
-              brew bump-formula-pr --no-browse --no-fork --version="${version:?}" "${{ github.repository }}/${package:?}"
+              git checkout -b "bump-${package}-${version}"
+              brew bump-formula-pr --write-only --commit --version="${version:?}" "${{ github.repository }}/${package:?}"
+              git push origin "bump-${package}-${version}"
+              gh pr create --title "${package}: update to ${version}" --body "Automated update of ${package} to version ${version}"
+              git checkout ${{ github.ref }}
             done
           done
