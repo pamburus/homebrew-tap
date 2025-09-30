@@ -15,8 +15,8 @@ class Fd < Formula
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/sharkdp/fd/releases/download/v10.2.0/fd-v10.2.0-aarch64-apple-darwin.tar.gz"
-      sha256 "ae6327ba8c9a487cd63edd8bddd97da0207887a66d61e067dfe80c1430c5ae36"
+      url "https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-aarch64-apple-darwin.tar.gz"
+      sha256 "0570263812089120bc2a5d84f9e65cd0c25e4a4d724c80075c357239c74ae904"
 
       define_method(:install) do
         bin.install "fd"
