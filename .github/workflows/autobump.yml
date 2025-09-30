@@ -1,0 +1,159 @@
+name: Auto Update Formulas
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+defaults:
+  run:
+    shell: bash -euxo pipefail {0}
+
+jobs:
+  detect-updates:
+    name: Detect updates
+    runs-on: ubuntu-latest
+    outputs:
+      updates: ${{ steps.check.outputs.updates }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Check for updates
+        id: check
+        run: |
+          updates="[]"
+          for formula in Formula/*.rb; do
+            package=$(basename "$formula" .rb)
+            for version in $(brew livecheck --quiet --newer-only --json "$package" | jq -r '.[].version.latest // empty'); do
+              updates=$(echo "$updates" | jq --arg pkg "$package" --arg ver "$version" '. += [{"package": $pkg, "version": $ver}]')
+            done
+          done
+          echo "updates=$(echo "$updates" | jq -c .)" >> $GITHUB_OUTPUT
+
+  update-formula:
+    name: Update formula
+    needs: detect-updates
+    if: needs.detect-updates.outputs.updates != '[]'
+    strategy:
+      matrix:
+        update: ${{ fromJson(needs.detect-updates.outputs.updates) }}
+        os: [ubuntu-24.04, macos-14, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Cache Homebrew Bundler RubyGems
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: ${{ runner.os }}-rubygems-
+
+      - name: Build bottle
+        env:
+          PACKAGE: ${{ github.repository }}/${{ matrix.update.package }}
+          VERSION: ${{ matrix.update.version }}
+        run: |
+          brew bump-formula-pr --write-only --version="$VERSION" --no-browse "$PACKAGE"
+          brew test-bot --only-cleanup-before
+          brew test-bot --only-setup
+          brew test-bot --only-formulae --skip-online-checks "$PACKAGE"
+
+      - name: Upload bottles
+        uses: actions/upload-artifact@v4
+        with:
+          name: bottles-${{ matrix.update.package }}-${{ matrix.update.version }}-${{ matrix.os }}
+          path: "*.bottle.*"
+          retention-days: 1
+
+  integrate-bottles:
+    name: Integrate bottles
+    needs: [detect-updates, update-formula]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          token: ${{ github.token }}
+          fetch-depth: 0
+
+      - uses: Homebrew/actions/setup-homebrew@master
+      - uses: Homebrew/actions/git-user-config@master
+
+      - name: Download all bottles
+        uses: actions/download-artifact@v4
+        with:
+          path: bottles/
+
+      - name: Integrate all updates sequentially
+        env:
+          UPDATES: ${{ needs.detect-updates.outputs.updates }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          # Work in Homebrew's tap directory where formulas are actually modified
+          TAP_DIR="$(brew --repository)/Library/Taps/${{ github.repository }}"
+          cd "$TAP_DIR"
+
+          # Configure git in the tap directory
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          git config url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "https://github.com/"
+
+          # Fetch and checkout the correct branch
+          git fetch origin ${{ github.ref_name }}
+          git checkout ${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }}
+
+          for update in $(echo "$UPDATES" | jq -r '.[] | @base64'); do
+            package=$(echo "$update" | base64 -d | jq -r '.package')
+            version=$(echo "$update" | base64 -d | jq -r '.version')
+            src=src/formula/$package.json
+
+            echo "Processing $package $version"
+
+            # Move bottles for this package to tap directory
+            find $GITHUB_WORKSPACE/bottles/ -name "bottles-$package-$version-*" -type d | while read dir; do
+              cp "$dir"/*.bottle.* .
+            done
+
+            # Rename bottles based on JSON metadata (the official way)
+            for json in *.bottle.json; do
+              if [[ -f "$json" ]]; then
+                local_filename=$(jq -r '.["pamburus/tap/'$package'"].bottle.tags[].local_filename // empty' "$json" | head -1)
+                filename=$(jq -r '.["pamburus/tap/'$package'"].bottle.tags[].filename // empty' "$json" | head -1)
+                if [[ -n "$local_filename" && -n "$filename" && -f "$local_filename" ]]; then
+                  mv "$local_filename" "$filename"
+                fi
+              fi
+            done
+
+            # Update all platform URLs in the formula using tapctl
+            jq --arg ver "$version" '.version = $ver' $src > .pkg.tmp && mv .pkg.tmp $src
+            bin/tapctl.py -v sync --write-only --pre-brew $package
+
+            # Now let brew handle the rest (bottles, etc.)
+            brew bump-formula-pr --write-only --version="$version" --no-browse "$package"
+            brew bottle --merge --write --no-commit *.bottle.json
+
+            # Commit changes
+            git add "Formula/$package.rb"
+            git commit -m "$package: update to $version"
+            git push origin ${{ github.ref_name }}
+
+            # Get the commit SHA that was just pushed
+            commit_sha=$(git rev-parse HEAD)
+
+            # Create release at the specific commit (exclude JSON files)
+            gh release create "$package-$version" --target "$commit_sha" --title "$package-$version" --notes "${package} ${version} with bottles" *.bottle.tar.gz
+
+            # Clean up bottle files for next iteration
+            rm -f *.bottle.*
+          done
