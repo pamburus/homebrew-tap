@@ -24,11 +24,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git status
+          git diff
           brew tap ${{ github.repository }}
           for formula in Formula/*.rb; do
             package=$(basename "${formula:?}" .rb)
             for version in $(brew livecheck --quiet --newer-only --json "${{ github.repository }}/${package}" | jq -r '.[].version.latest'); do
               gh pr list --search "${package}: update" --state open --json number | jq -e '.[] | select(.number)' >/dev/null && continue
+              git status
               brew bump-formula-pr --no-browse --no-fork --version="${version:?}" "${{ github.repository }}/${package:?}"
             done
           done
