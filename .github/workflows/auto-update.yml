@@ -85,7 +85,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
+          fetch-depth: 0
 
       - uses: Homebrew/actions/setup-homebrew@master
       - uses: Homebrew/actions/git-user-config@master
@@ -101,7 +102,7 @@ jobs:
         env:
           PACKAGE: ${{ matrix.update.package }}
           VERSION: ${{ matrix.update.version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           mv bottles/*.bottle.* .
           brew bump-formula-pr --write-only --version="$VERSION" --no-browse "${{ github.repository }}/$PACKAGE"
