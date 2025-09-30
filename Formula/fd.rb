@@ -1,7 +1,6 @@
 class Fd < Formula
   desc "Fast, user-friendly, and open-source alternative to find"
   homepage "https://github.com/sharkdp/fd"
-  version "10.2.0"
   license "MIT"
   head "https://github.com/sharkdp/fd.git", branch: "master"
 

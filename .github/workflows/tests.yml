@@ -16,9 +16,15 @@ jobs:
       - uses: Homebrew/actions/setup-homebrew@master
       - name: Test formulas
         run: |
+          # Switch tap to current commit
+          tap_dir=$(brew --repo ${{ github.repository }})
+          cd "$tap_dir"
+          git checkout ${{ github.sha }}
+          cd -
+
           for formula in Formula/*.rb; do
             package=$(basename "$formula" .rb)
-            brew install --build-bottle "$formula"
-            brew test "$formula"
-            brew audit --strict "$formula"
+            brew install --build-bottle "${{ github.repository }}/$package"
+            brew test "${{ github.repository }}/$package"
+            brew audit --strict "${{ github.repository }}/$package"
           done
