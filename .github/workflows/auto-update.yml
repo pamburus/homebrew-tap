@@ -16,13 +16,15 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: Homebrew/actions/setup-homebrew@master
       - uses: Homebrew/actions/git-user-config@master
       - name: Update packages
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
           brew tap ${{ github.repository }}
           for formula in Formula/*.rb; do
             package=$(basename "${formula:?}" .rb)
