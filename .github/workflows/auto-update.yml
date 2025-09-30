@@ -105,7 +105,7 @@ jobs:
         run: |
           mv bottles/*.bottle.* .
           brew bump-formula-pr --write-only --version="$VERSION" --no-browse "${{ github.repository }}/$PACKAGE"
-          brew bottle --merge --write --no-commit "Formula/$PACKAGE.rb" *.bottle.*
+          brew bottle --merge --write --no-commit *.bottle.json
           git add Formula/"$PACKAGE".rb
           git commit -m "$PACKAGE: update to $VERSION"
           git push origin main
