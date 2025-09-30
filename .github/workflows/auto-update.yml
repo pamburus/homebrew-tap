@@ -28,6 +28,13 @@ jobs:
           for formula in Formula/*.rb; do
             package=$(basename "${formula:?}" .rb)
             for version in $(brew livecheck --quiet --newer-only --json "${{ github.repository }}/${package}" | jq -r '.[].version.latest'); do
-              brew bump-formula-pr --no-browse --no-fork --version="${version:?}" "${{ github.repository }}/${package:?}"
+              if gh pr list --search "${package}: update" --state open --json number | jq -e '.[] | select(.number)' >/dev/null; then
+                echo "PR already exists for ${package}, skipping"
+                continue
+              fi
+              brew bump-formula-pr --no-browse --no-fork --version="${version:?}" "${{ github.repository }}/${package:?}" || {
+                git checkout -- .
+                git clean -fd
+              }
             done
           done
