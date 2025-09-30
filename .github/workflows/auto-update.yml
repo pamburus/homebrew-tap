@@ -33,7 +33,7 @@ jobs:
               updates=$(echo "$updates" | jq --arg pkg "$package" --arg ver "$version" '. += [{"package": $pkg, "version": $ver}]')
             done
           done
-          echo "updates=$updates" >> $GITHUB_OUTPUT
+          echo "updates=$(echo "$updates" | jq -c .)" >> $GITHUB_OUTPUT
 
   update-formula:
     name: Update Formula
