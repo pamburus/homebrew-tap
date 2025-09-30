@@ -39,11 +39,13 @@ jobs:
               gh pr list --search "${package}: update" --state open --json number | jq -e '.[] | select(.number)' >/dev/null && continue
               git checkout -b "bump-${package}-${version}"
               git status
-              brew bump-formula-pr --write-only --commit --version="${version:?}" "${{ github.repository }}/${package:?}"
+              brew bump-formula-pr --write-only --version="${version:?}" "${{ github.repository }}/${package:?}"
+              git add Formula/${package}.rb
+              git commit -m "${package}: update to ${version}"
               git status
               git log --oneline -3
               git push origin "bump-${package}-${version}"
               gh pr create --title "${package}: update to ${version}" --body "Automated update of ${package} to version ${version}"
-              git checkout ${{ github.ref }}
+              git checkout ${{ github.sha }}
             done
           done
