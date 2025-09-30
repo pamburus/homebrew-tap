@@ -108,5 +108,5 @@ jobs:
           brew bottle --merge --write --no-commit *.bottle.json
           git add Formula/"$PACKAGE".rb
           git commit -m "$PACKAGE: update to $VERSION"
-          git push origin main
+          git push origin ${{ github.ref_name }}
           gh release create "$PACKAGE-$VERSION" --title "$PACKAGE $VERSION" --notes "Automated release" *.bottle.*
