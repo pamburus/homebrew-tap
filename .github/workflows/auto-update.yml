@@ -5,16 +5,19 @@ on:
     - cron: "0 6 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+  issues: read
+  actions: read
+
 defaults:
   run:
     shell: bash -euxo pipefail {0}
 
 jobs:
   update:
+    name: Update
     runs-on: macos-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v5
       - run: git remote -v
