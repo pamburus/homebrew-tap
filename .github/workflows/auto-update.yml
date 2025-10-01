@@ -117,7 +117,7 @@ jobs:
           for update in $(echo "$UPDATES" | jq -r '.[] | @base64'); do
             package=$(echo "$update" | base64 -d | jq -r '.package')
             version=$(echo "$update" | base64 -d | jq -r '.version')
-            # src=src/formula/$package.json
+            src=src/formula/$package.json
 
             echo "Processing $package $version"
 
@@ -137,10 +137,11 @@ jobs:
               fi
             done
 
-            # jq '.version = "$version"' $src > .pkg.tmp && mv .pkg.tmp $src
-            # bin/tapctl.py sync --write-only $package
+            # Update all platform URLs in the formula using tapctl
+            jq --arg ver "$version" '.version = $ver' $src > .pkg.tmp && mv .pkg.tmp $src
+            bin/tapctl.py sync --write-only $package
 
-            # Update formula and integrate bottles
+            # Now let brew handle the rest (bottles, etc.)
             brew bump-formula-pr --write-only --version="$version" --no-browse "$package"
             brew bottle --merge --write --no-commit *.bottle.json
 
