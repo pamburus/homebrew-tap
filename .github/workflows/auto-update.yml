@@ -15,7 +15,7 @@ defaults:
 
 jobs:
   detect-updates:
-    name: Detect Updates
+    name: Detect updates
     runs-on: ubuntu-latest
     outputs:
       updates: ${{ steps.check.outputs.updates }}
@@ -36,7 +36,7 @@ jobs:
           echo "updates=$(echo "$updates" | jq -c .)" >> $GITHUB_OUTPUT
 
   update-formula:
-    name: Update Formula
+    name: Update formula
     needs: detect-updates
     if: needs.detect-updates.outputs.updates != '[]'
     strategy:
@@ -76,6 +76,7 @@ jobs:
           retention-days: 1
 
   integrate-bottles:
+    name: Integrate bottles
     needs: [detect-updates, update-formula]
     runs-on: ubuntu-latest
     steps:
@@ -139,7 +140,7 @@ jobs:
 
             # Update all platform URLs in the formula using tapctl
             jq --arg ver "$version" '.version = $ver' $src > .pkg.tmp && mv .pkg.tmp $src
-            bin/tapctl.py sync --write-only $package
+            bin/tapctl.py sync --write-only --skip-current-platform $package
 
             # Now let brew handle the rest (bottles, etc.)
             brew bump-formula-pr --write-only --version="$version" --no-browse "$package"
