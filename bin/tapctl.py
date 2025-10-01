@@ -365,7 +365,7 @@ class GitHubRelease:
         return self.meta['name']
 
     @property
-    def assets(self) -> dict:
+    def assets(self) -> dict[str, dict[str, typing.Any]]:
         '''The assets of the release.'''
         return {x['name']: x for x in self.meta['assets']}
 
@@ -375,7 +375,7 @@ class GitHubRelease:
         return self.meta['tag_name'].lstrip('v')
 
     @cached_property
-    def meta(self) -> dict:
+    def meta(self) -> dict[str, typing.Any]:
         '''The metadata of the release.'''
         if self._meta:
             return self._meta
@@ -419,7 +419,7 @@ class GitHubRepo:
 class FormulaAsset:
     '''An asset for a formula.'''
 
-    def __init__(self, formula: 'Formula', spec: dict, release: GitHubRelease):
+    def __init__(self, formula: 'Formula', spec: dict[str, typing.Any], release: GitHubRelease):
         self.formula = formula
         self.spec = spec
         self.release = release
@@ -481,7 +481,10 @@ class Formula:
         if pre_brew:
             os = this_os()
             arch = this_arch()
+            old_release = self.repo.release(self.target_version).resolved
+            old_assets = self.assets(old_release.name)
             assets = [x for x in assets if x.os != os or x.arch != arch]
+            assets += [x for x in old_assets if x.os == os and x.arch == arch]
             version = self.target_version
             for asset in assets:
                 logging.debug('asset %s: %s', asset, asset.url)
@@ -636,7 +639,7 @@ def sync(args):
     if not formulas:
         formulas = Formula.discover()
     for formula in map(Formula, formulas):
-        formula.sync(force=args.force, write_only=args.write_only)
+        formula.sync(force=args.force, write_only=args.write_only, pre_brew=args.pre_brew)
 
 
 def setup_logging(level: int = logging.INFO):
