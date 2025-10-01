@@ -84,6 +84,9 @@ jobs:
           token: ${{ github.token }}
           fetch-depth: 0
 
+      - run: git ls-remote origin
+      - run: git branch -a
+
       - uses: Homebrew/actions/setup-homebrew@master
       - uses: Homebrew/actions/git-user-config@master
 
@@ -98,6 +101,9 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "https://github.com/"
+
+          git ls-remote origin
+          git branch -a
 
           for update in $(echo "$UPDATES" | jq -r '.[] | @base64'); do
             package=$(echo "$update" | base64 -d | jq -r '.package')
