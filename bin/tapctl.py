@@ -407,7 +407,7 @@ class FormulaAsset:
     @property
     def name(self) -> str:
         '''The name of the asset.'''
-        return self.spec['name'].replace(f'{version}', self.formula.version)
+        return self.spec['name'].replace('{version}', self.formula.version)
 
     @property
     def os(self) -> str:
