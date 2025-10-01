@@ -76,38 +76,49 @@ jobs:
           retention-days: 1
 
   integrate-bottles:
-    name: Integrate Bottles
     needs: [detect-updates, update-formula]
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        update: ${{ fromJson(needs.detect-updates.outputs.updates) }}
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ github.token }}
-          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: Homebrew/actions/setup-homebrew@master
       - uses: Homebrew/actions/git-user-config@master
 
-      - name: Download bottles
+      - name: Download all bottles
         uses: actions/download-artifact@v4
         with:
-          pattern: bottles-${{ matrix.update.package }}-${{ matrix.update.version }}-*
           path: bottles/
-          merge-multiple: true
 
-      - name: Integrate and commit
+      - name: Integrate all updates sequentially
         env:
-          PACKAGE: ${{ matrix.update.package }}
-          VERSION: ${{ matrix.update.version }}
-          GITHUB_TOKEN: ${{ github.token }}
+          UPDATES: ${{ needs.detect-updates.outputs.updates }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mv bottles/*.bottle.* .
-          brew bump-formula-pr --write-only --version="$VERSION" --no-browse "${{ github.repository }}/$PACKAGE"
-          brew bottle --merge --write --no-commit *.bottle.json
-          git add Formula/"$PACKAGE".rb
-          git commit -m "$PACKAGE: update to $VERSION"
-          git push origin ${{ github.ref_name }}
-          gh release create "$PACKAGE-$VERSION" --title "$PACKAGE $VERSION" --notes "Automated release" *.bottle.*
+          for update in $(echo "$UPDATES" | jq -r '.[] | @base64'); do
+            package=$(echo "$update" | base64 -d | jq -r '.package')
+            version=$(echo "$update" | base64 -d | jq -r '.version')
+
+            echo "Processing $package $version"
+
+            # Move bottles for this package to current directory
+            find bottles/ -name "bottles-$package-$version-*" -type d | while read dir; do
+              mv "$dir"/*.bottle.* .
+            done
+
+            # Update formula and integrate bottles
+            brew bump-formula-pr --write-only --version="$version" --no-browse "Formula/$package.rb"
+            brew bottle --merge --write --no-commit *.bottle.json
+
+            # Commit changes
+            git add "Formula/$package.rb"
+            git commit -m "$package: update to $version"
+            git push origin main
+
+            # Create release
+            gh release create "$package-$version" --title "$package $version" --notes "Automated release" *.bottle.*
+
+            # Clean up bottle files for next iteration
+            rm -f *.bottle.*
+          done
