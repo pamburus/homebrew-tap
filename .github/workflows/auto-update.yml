@@ -126,6 +126,17 @@ jobs:
               cp "$dir"/*.bottle.* .
             done
 
+            # Rename bottles based on JSON metadata (the official way)
+            for json in *.bottle.json; do
+              if [[ -f "$json" ]]; then
+                local_filename=$(jq -r '.["pamburus/tap/'$package'"].bottle.tags[].local_filename // empty' "$json" | head -1)
+                filename=$(jq -r '.["pamburus/tap/'$package'"].bottle.tags[].filename // empty' "$json" | head -1)
+                if [[ -n "$local_filename" && -n "$filename" && -f "$local_filename" ]]; then
+                  mv "$local_filename" "$filename"
+                fi
+              fi
+            done
+
             # jq '.version = "$version"' $src > .pkg.tmp && mv .pkg.tmp $src
             # bin/tapctl.py sync --write-only $package
 
@@ -138,8 +149,8 @@ jobs:
             git commit -m "$package: update to $version"
             git push origin ${{ github.ref_name }}
 
-            # Create release
-            gh release create "$package-$version" --title "$package $version" --notes "Automated release" *.bottle.*
+            # Create release (exclude JSON files)
+            gh release create "$package-$version" --title "$package-$version" --notes "Automated release" *.bottle.tar.gz
 
             # Clean up bottle files for next iteration
             rm -f *.bottle.*
