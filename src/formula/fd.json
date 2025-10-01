@@ -1,0 +1,29 @@
+{
+  "repository": {
+    "url": "https://github.com/sharkdp/fd",
+    "branch": "master"
+  },
+  "version": "10.2.0",
+  "assets": [
+    {
+      "name": "fd-v10.2.0-aarch64-apple-darwin.tar.gz",
+      "os": "macos",
+      "arch": "arm64"
+    },
+    {
+      "name": "fd-v10.2.0-x86_64-apple-darwin.tar.gz",
+      "os": "macos",
+      "arch": "amd64"
+    },
+    {
+      "name": "fd-v10.2.0-aarch64-unknown-linux-musl.tar.gz",
+      "os": "linux",
+      "arch": "arm64"
+    },
+    {
+      "name": "fd-v10.2.0-x86_64-unknown-linux-musl.tar.gz",
+      "os": "linux",
+      "arch": "amd64"
+    }
+  ]
+}
