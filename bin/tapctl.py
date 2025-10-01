@@ -449,7 +449,7 @@ class Formula:
         files = glob.glob(os.path.join(FORMULA_SOURCE_DIR, '*.json'))
         return [os.path.basename(x.removesuffix('.json')) for x in files]
 
-    def sync(self, force=False):
+    def sync(self, force=False, write_only=False):
         '''Synchronize the formula with the latest release.'''
         if not force and self.version == self.target_version:
             logging.debug('%s: already up-to-date', self)
@@ -468,7 +468,7 @@ class Formula:
         script = render(read(self.template), **params)
         write(self.target_file, script)
 
-        if not self.local_repo.is_clean and self.local_repo.is_clean_except(self.target_file, self.spec_file):
+        if not write_only and not self.local_repo.is_clean and self.local_repo.is_clean_except(self.target_file, self.spec_file):
             self.make_pull_request()
 
     def make_pull_request(self):
@@ -609,7 +609,7 @@ def sync(args):
     if not formulas:
         formulas = Formula.discover()
     for formula in map(Formula, formulas):
-        formula.sync(force=args.force)
+        formula.sync(force=args.force, write_only=args.write_only)
 
 
 def setup_logging(level: int = logging.INFO):
@@ -641,6 +641,8 @@ def setup_cli_command_sync(group):
     command = group.add_parser('sync', help='Synchronize the homebrew tap with the source code')
     command.add_argument('--force', '-f', action='store_true', default=False,
                          help='Force the synchronization even if formulas are up-to-date')
+    command.add_argument('--write-only', action='store_true', default=False,
+                         help='Only write the changes locally, do not commit and push')
     command.add_argument('formula', nargs='*', help='The list of formulas to synchronize')
     command.set_defaults(func=sync)
 
