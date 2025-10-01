@@ -120,7 +120,7 @@ jobs:
             # Commit changes
             git add "Formula/$package.rb"
             git commit -m "$package: update to $version"
-            git push origin main
+            git push origin ${{ github.ref_name }}
 
             # Create release
             gh release create "$package-$version" --title "$package $version" --notes "Automated release" *.bottle.*
