@@ -100,10 +100,19 @@ jobs:
           UPDATES: ${{ needs.detect-updates.outputs.updates }}
           GITHUB_TOKEN: ${{ github.token }}
         run: |
+          # Work in Homebrew's tap directory where formulas are actually modified
+          TAP_DIR="$(brew --repository)/Library/Taps/${{ github.repository }}"
+          cd "$TAP_DIR"
+
+          # Configure git in the tap directory
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
           git config url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "https://github.com/"
 
-          git ls-remote origin
-          git branch -a
+          # Fetch and checkout the correct branch
+          git fetch origin ${{ github.ref_name }}
+          git checkout ${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }}
 
           for update in $(echo "$UPDATES" | jq -r '.[] | @base64'); do
             package=$(echo "$update" | base64 -d | jq -r '.package')
@@ -112,16 +121,16 @@ jobs:
 
             echo "Processing $package $version"
 
-            # Move bottles for this package to current directory
-            find bottles/ -name "bottles-$package-$version-*" -type d | while read dir; do
-              mv "$dir"/*.bottle.* .
+            # Move bottles for this package to tap directory
+            find $GITHUB_WORKSPACE/bottles/ -name "bottles-$package-$version-*" -type d | while read dir; do
+              cp "$dir"/*.bottle.* .
             done
 
             # jq '.version = "$version"' $src > .pkg.tmp && mv .pkg.tmp $src
             # bin/tapctl.py sync --write-only $package
 
             # Update formula and integrate bottles
-            brew bump-formula-pr --write-only --version="$version" --no-browse "${{ github.repository }}/$package"
+            brew bump-formula-pr --write-only --version="$version" --no-browse "$package"
             brew bottle --merge --write --no-commit *.bottle.json
 
             # Commit changes
