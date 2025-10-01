@@ -11,7 +11,7 @@ class Termframe < Formula
       sha256 "{{ ASSET_MACOS_AMD64_SHA256 }}"
 
       define_method(:install) do
-        bin.install "hl"
+        bin.install "termframe"
         generate_completions_from_executable(bin/"termframe", "--shell-completions")
         (man1/"termframe.1").write Utils.safe_popen_read(bin/"termframe", "--man-page")
       end
