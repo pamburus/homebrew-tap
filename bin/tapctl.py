@@ -469,7 +469,7 @@ class Formula:
         files = glob.glob(os.path.join(FORMULA_SOURCE_DIR, '*.json'))
         return [os.path.basename(x.removesuffix('.json')) for x in files]
 
-    def sync(self, force=False, write_only=False, skip_current_platform=False):
+    def sync(self, force=False, write_only=False, pre_brew=False):
         '''Synchronize the formula with the latest release.'''
         if not force and self.version == self.target_version:
             logging.debug('%s: already up-to-date', self)
@@ -478,10 +478,13 @@ class Formula:
         release = self.repo.release(self.version).resolved
         version = release.version
         assets = self.assets(release.name)
-        if skip_current_platform:
+        if pre_brew:
             os = this_os()
             arch = this_arch()
             assets = [x for x in assets if x.os != os or x.arch != arch]
+            version = self.target_version
+            for asset in assets:
+                logging.debug('asset %s: %s', asset, asset.url)
         params = {
             'VERSION': version,
             **{f'ASSET_{x.os.upper()}_{x.arch.upper()}_URL': x.url for x in assets},
@@ -667,8 +670,8 @@ def setup_cli_command_sync(group):
                          help='Force the synchronization even if formulas are up-to-date')
     command.add_argument('--write-only', action='store_true', default=False,
                          help='Only write the changes locally, do not commit and push')
-    command.add_argument('--skip-current-platform', action='store_true', default=False,
-                         help='Skip assets for the current platform when synchronizing (let brew handle it)')
+    command.add_argument('--pre-brew', action='store_true', default=False,
+                         help='Prepare changes for brew (let brew handle what it wants)')
     command.add_argument('formula', nargs='*', help='The list of formulas to synchronize')
     command.set_defaults(func=sync)
 
