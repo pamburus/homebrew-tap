@@ -149,8 +149,11 @@ jobs:
             git commit -m "$package: update to $version"
             git push origin ${{ github.ref_name }}
 
-            # Create release (exclude JSON files)
-            gh release create "$package-$version" --title "$package-$version" --notes "Automated release" *.bottle.tar.gz
+            # Get the commit SHA that was just pushed
+            commit_sha=$(git rev-parse HEAD)
+
+            # Create release at the specific commit (exclude JSON files)
+            gh release create "$package-$version" --target "$commit_sha" --title "$package-$version" --notes "${package} ${version} with bottles" *.bottle.tar.gz
 
             # Clean up bottle files for next iteration
             rm -f *.bottle.*
