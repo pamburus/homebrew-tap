@@ -20,7 +20,7 @@ jobs:
     outputs:
       updates: ${{ steps.check.outputs.updates }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: Homebrew/actions/setup-homebrew@master
 
       - name: Check for updates
@@ -45,7 +45,7 @@ jobs:
         os: [ubuntu-24.04, macos-14, macos-15]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -79,9 +79,10 @@ jobs:
     needs: [detect-updates, update-formula]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
+          fetch-depth: 0
 
       - uses: Homebrew/actions/setup-homebrew@master
       - uses: Homebrew/actions/git-user-config@master
@@ -94,7 +95,7 @@ jobs:
       - name: Integrate all updates sequentially
         env:
           UPDATES: ${{ needs.detect-updates.outputs.updates }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           git config url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "https://github.com/"
 
