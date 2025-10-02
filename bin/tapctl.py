@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import re
+import platform
 import shlex
 import subprocess
 import sys
@@ -253,6 +254,25 @@ def normalized_release_ref(fn):
     return wrapper
 
 
+def this_os():
+    '''Get the current operating system.'''
+    system = platform.system()
+    if system == "Darwin":
+        return "macos"
+    elif system == "Linux":
+        return "linux"
+    raise ValueError(f"Unsupported operating system: {system}")
+
+def this_arch():
+    '''Get the current architecture.'''
+    arch = platform.machine()
+    if arch in ["x86_64", "amd64"]:
+        return "amd64"
+    elif arch in ["arm64", "aarch64"]:
+        return "arm64"
+    raise ValueError(f"Unsupported architecture: {arch}")
+
+
 class LocalGitRepo:
     '''A local git repository.'''
 
@@ -345,7 +365,7 @@ class GitHubRelease:
         return self.meta['name']
 
     @property
-    def assets(self) -> dict:
+    def assets(self) -> dict[str, dict[str, typing.Any]]:
         '''The assets of the release.'''
         return {x['name']: x for x in self.meta['assets']}
 
@@ -355,7 +375,7 @@ class GitHubRelease:
         return self.meta['tag_name'].lstrip('v')
 
     @cached_property
-    def meta(self) -> dict:
+    def meta(self) -> dict[str, typing.Any]:
         '''The metadata of the release.'''
         if self._meta:
             return self._meta
@@ -399,7 +419,7 @@ class GitHubRepo:
 class FormulaAsset:
     '''An asset for a formula.'''
 
-    def __init__(self, formula: 'Formula', spec: dict, release: GitHubRelease):
+    def __init__(self, formula: 'Formula', spec: dict[str, typing.Any], release: GitHubRelease):
         self.formula = formula
         self.spec = spec
         self.release = release
@@ -407,7 +427,7 @@ class FormulaAsset:
     @property
     def name(self) -> str:
         '''The name of the asset.'''
-        return self.spec['name']
+        return self.spec['name'].replace('{version}', self.formula.version)
 
     @property
     def os(self) -> str:
@@ -449,7 +469,7 @@ class Formula:
         files = glob.glob(os.path.join(FORMULA_SOURCE_DIR, '*.json'))
         return [os.path.basename(x.removesuffix('.json')) for x in files]
 
-    def sync(self, force=False):
+    def sync(self, force=False, write_only=False, pre_brew=False):
         '''Synchronize the formula with the latest release.'''
         if not force and self.version == self.target_version:
             logging.debug('%s: already up-to-date', self)
@@ -458,6 +478,14 @@ class Formula:
         release = self.repo.release(self.version).resolved
         version = release.version
         assets = self.assets(release.name)
+        if pre_brew:
+            os = this_os()
+            arch = this_arch()
+            old_release = self.repo.release(self.target_version).resolved
+            old_assets = self.assets(old_release.name)
+            assets = [x for x in assets if x.os != os or x.arch != arch]
+            assets += [x for x in old_assets if x.os == os and x.arch == arch]
+            version = self.target_version
         params = {
             'VERSION': version,
             **{f'ASSET_{x.os.upper()}_{x.arch.upper()}_URL': x.url for x in assets},
@@ -468,7 +496,7 @@ class Formula:
         script = render(read(self.template), **params)
         write(self.target_file, script)
 
-        if not self.local_repo.is_clean and self.local_repo.is_clean_except(self.target_file, self.spec_file):
+        if not write_only and not self.local_repo.is_clean and self.local_repo.is_clean_except(self.target_file, self.spec_file):
             self.make_pull_request()
 
     def make_pull_request(self):
@@ -609,7 +637,7 @@ def sync(args):
     if not formulas:
         formulas = Formula.discover()
     for formula in map(Formula, formulas):
-        formula.sync(force=args.force)
+        formula.sync(force=args.force, write_only=args.write_only, pre_brew=args.pre_brew)
 
 
 def setup_logging(level: int = logging.INFO):
@@ -641,6 +669,10 @@ def setup_cli_command_sync(group):
     command = group.add_parser('sync', help='Synchronize the homebrew tap with the source code')
     command.add_argument('--force', '-f', action='store_true', default=False,
                          help='Force the synchronization even if formulas are up-to-date')
+    command.add_argument('--write-only', action='store_true', default=False,
+                         help='Only write the changes locally, do not commit and push')
+    command.add_argument('--pre-brew', action='store_true', default=False,
+                         help='Prepare changes for brew (let brew handle what it wants)')
     command.add_argument('formula', nargs='*', help='The list of formulas to synchronize')
     command.set_defaults(func=sync)
 
