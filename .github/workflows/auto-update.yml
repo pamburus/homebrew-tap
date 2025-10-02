@@ -9,10 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       formulas:
-        description: |
-          Formulas to update (space-separated)
-          Example: termframe hl
-          Leave empty to check all formulas
+        description: Formulas to update (space-separated)
         required: false
         type: string
 
