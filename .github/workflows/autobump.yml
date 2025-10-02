@@ -94,6 +94,13 @@ jobs:
         with:
           path: bottles/
 
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+
       - name: Integrate all updates sequentially
         env:
           UPDATES: ${{ needs.detect-updates.outputs.updates }}
@@ -106,7 +113,7 @@ jobs:
           # Configure git in the tap directory
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "GitHub Actions"
-          git config url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "https://github.com/"
+          git config url."https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/".insteadOf "https://github.com/"
 
           # Fetch and checkout the correct branch
           git fetch origin ${{ github.ref_name }}
