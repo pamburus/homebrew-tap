@@ -7,6 +7,14 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      formulas:
+        description: |
+          Formulas to update (space-separated)
+          Example: termframe hl
+          Leave empty to check all formulas
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -30,7 +38,8 @@ jobs:
         id: check
         run: |
           updates="[]"
-          for formula in Formula/*.rb; do
+          formulas="${{ github.event.inputs.formulas }}"
+          for formula in ${formulas:-Formula/*.rb}; do
             package=$(basename "$formula" .rb)
             for version in $(brew livecheck --quiet --newer-only --json "$package" | jq -r '.[].version.latest // empty'); do
               updates=$(echo "$updates" | jq --arg pkg "$package" --arg ver "$version" '. += [{"package": $pkg, "version": $ver}]')
