@@ -33,7 +33,8 @@ jobs:
               updates=$(echo "$updates" | jq --arg pkg "$package" --arg ver "$version" '. += [{"package": $pkg, "version": $ver}]')
             done
           done
-          echo "updates=$(echo "$updates" | jq -c .)" >> $GITHUB_OUTPUT
+          updates_json=$(echo "$updates" | jq -c .)
+          echo "updates=$updates_json" >> "${GITHUB_OUTPUT}"
 
   update-formula:
     name: Update formula
@@ -115,20 +116,20 @@ jobs:
           for update in $(echo "$UPDATES" | jq -r '.[] | @base64'); do
             package=$(echo "$update" | base64 -d | jq -r '.package')
             version=$(echo "$update" | base64 -d | jq -r '.version')
-            src=src/formula/$package.json
+            src="src/formula/$package.json"
 
             echo "Processing $package $version"
 
             # Move bottles for this package to tap directory
-            find $GITHUB_WORKSPACE/bottles/ -name "bottles-$package-$version-*" -type d | while read dir; do
+            find "$GITHUB_WORKSPACE/bottles/" -name "bottles-$package-$version-*" -type d | while read -r dir; do
               cp "$dir"/*.bottle.* .
             done
 
             # Rename bottles based on JSON metadata (the official way)
-            for json in *.bottle.json; do
+            for json in ./*.bottle.json; do
               if [[ -f "$json" ]]; then
-                local_filename=$(jq -r '.["pamburus/tap/'$package'"].bottle.tags[].local_filename // empty' "$json" | head -1)
-                filename=$(jq -r '.["pamburus/tap/'$package'"].bottle.tags[].filename // empty' "$json" | head -1)
+                local_filename=$(jq -r '.["pamburus/tap/'"$package"'"].bottle.tags[].local_filename // empty' "$json" | head -1)
+                filename=$(jq -r '.["pamburus/tap/'"$package"'"].bottle.tags[].filename // empty' "$json" | head -1)
                 if [[ -n "$local_filename" && -n "$filename" && -f "$local_filename" ]]; then
                   mv "$local_filename" "$filename"
                 fi
@@ -136,12 +137,12 @@ jobs:
             done
 
             # Update all platform URLs in the formula using tapctl
-            jq --arg ver "$version" '.version = $ver' $src > .pkg.tmp && mv .pkg.tmp $src
-            bin/tapctl.py -v sync --write-only --pre-brew $package
+            jq --arg ver "$version" '.version = $ver' "$src" > .pkg.tmp && mv .pkg.tmp "$src"
+            bin/tapctl.py -v sync --write-only --pre-brew "$package"
 
             # Now let brew handle the rest (bottles, etc.)
             brew bump-formula-pr --write-only --version="$version" --no-browse "$package"
-            brew bottle --merge --write --no-commit *.bottle.json
+            brew bottle --merge --write --no-commit -- ./*.bottle.json
 
             # Commit changes
             git add "Formula/$package.rb"
@@ -152,8 +153,8 @@ jobs:
             commit_sha=$(git rev-parse HEAD)
 
             # Create release at the specific commit (exclude JSON files)
-            gh release create "$package-$version" --target "$commit_sha" --title "$package-$version" --notes "${package} ${version} with bottles" *.bottle.tar.gz
+            gh release create "$package-$version" --target "$commit_sha" --title "$package-$version" --notes "${package} ${version} with bottles" -- ./*.bottle.tar.gz
 
             # Clean up bottle files for next iteration
-            rm -f *.bottle.*
+            rm -f ./*.bottle.*
           done
