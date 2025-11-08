@@ -166,10 +166,8 @@ jobs:
 
             # Update all platform URLs in the formula using tapctl
             jq --arg ver "$version" '.version = $ver' "$src" > .pkg.tmp && mv .pkg.tmp "$src"
-            bin/tapctl.py -v sync --write-only --pre-brew "$package"
+            bin/tapctl.py -v sync --write-only "$package"
 
-            # Now let brew handle the rest (bottles, etc.)
-            brew bump-formula-pr --write-only --version="$version" --no-browse "$package"
             brew bottle --merge --write --no-commit -- ./*.bottle.json
 
             # Commit changes
