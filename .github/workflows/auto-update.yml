@@ -56,7 +56,7 @@ jobs:
     strategy:
       matrix:
         update: ${{ fromJson(needs.detect-updates.outputs.updates) }}
-        os: [ubuntu-24.04, macos-14, macos-15]
+        os: [ubuntu-24.04, macos-14, macos-15, macos-26]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
