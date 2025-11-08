@@ -502,7 +502,7 @@ class Formula:
         files = glob.glob(os.path.join(FORMULA_SOURCE_DIR, "*.json"))
         return [os.path.basename(x.removesuffix(".json")) for x in files]
 
-    def sync(self, force=False, write_only=False, pre_brew=False):
+    def sync(self, force=False, write_only=False):
         """Synchronize the formula with the latest release."""
         if not force and self.version == self.target_version:
             logging.debug("%s: already up-to-date", self)
@@ -516,14 +516,6 @@ class Formula:
         release = self.repo.release(self.version).resolved
         version = release.version
         assets = self.assets(release.name)
-        if pre_brew:
-            os = this_os()
-            arch = this_arch()
-            old_release = self.repo.release(self.target_version).resolved
-            old_assets = self.assets(old_release.name)
-            assets = [x for x in assets if x.os != os or x.arch != arch]
-            assets += [x for x in old_assets if x.os == os and x.arch == arch]
-            version = self.target_version
         params = {
             "VERSION": version,
             **{
@@ -702,9 +694,7 @@ def sync(args):
     if not formulas:
         formulas = Formula.discover()
     for formula in map(Formula, formulas):
-        formula.sync(
-            force=args.force, write_only=args.write_only, pre_brew=args.pre_brew
-        )
+        formula.sync(force=args.force, write_only=args.write_only)
 
 
 def setup_logging(level: int = logging.INFO):
@@ -753,12 +743,7 @@ def setup_cli_command_sync(group):
         default=False,
         help="Only write the changes locally, do not commit and push",
     )
-    command.add_argument(
-        "--pre-brew",
-        action="store_true",
-        default=False,
-        help="Prepare changes for brew (let brew handle what it wants)",
-    )
+
     command.add_argument(
         "formula", nargs="*", help="The list of formulas to synchronize"
     )
