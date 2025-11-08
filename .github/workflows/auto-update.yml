@@ -75,7 +75,15 @@ jobs:
         run: |
           brew bump-formula-pr --write-only --version="$VERSION" --no-browse "$PACKAGE"
           brew test-bot --only-cleanup-before
+
+          # Workaround: Clean untracked files from homebrew-core (e.g., removed formulas like openssl@1.1)
+          # Only on macOS where homebrew-core tap exists (Linux uses JSON API)
+          if [[ -d "$(brew --repository homebrew/core)" ]]; then
+            git -C "$(brew --repository homebrew/core)" clean -fd
+          fi
+
           brew test-bot --only-setup
+
           brew test-bot --only-formulae --skip-online-checks "$PACKAGE"
 
       - name: Upload bottles
