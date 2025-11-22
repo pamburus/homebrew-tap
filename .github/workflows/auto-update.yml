@@ -72,6 +72,11 @@ jobs:
           key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ${{ runner.os }}-rubygems-
 
+      - name: Clean Homebrew core data
+        run: |
+          brew update
+          brew doctor || true
+
       - name: Build bottle
         env:
           PACKAGE: ${{ github.repository }}/${{ matrix.update.package }}
