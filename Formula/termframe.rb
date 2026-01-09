@@ -5,6 +5,11 @@ class Termframe < Formula
   license "MIT"
   head "https://github.com/pamburus/termframe.git", branch: "main"
 
+  livecheck do
+    url :stable
+    regex(/^v((?:0|[1-9]\d*)(?:\.(?:0|[1-9]\d*)){2})$/i)
+  end
+
   bottle do
     root_url "https://github.com/pamburus/homebrew-tap/releases/download/termframe-0.7.4"
     sha256 cellar: :any_skip_relocation, arm64_tahoe:   "02cf7a8d7ae82b847f81250791071c8bebe24abb09ed119d7fdeb2b657f59f1e"
