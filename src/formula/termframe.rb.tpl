@@ -5,6 +5,11 @@ class Termframe < Formula
   license "MIT"
   head "{{ REPOSITORY_URL }}", branch: "{{ HEAD_BRANCH }}"
 
+  livecheck do
+    url :stable
+    regex(/^v((?:0|[1-9]\d*)(?:\.(?:0|[1-9]\d*)){2})$/i)
+  end
+
   on_macos do
     if Hardware::CPU.intel?
       url "{{ ASSET_MACOS_AMD64_URL }}"

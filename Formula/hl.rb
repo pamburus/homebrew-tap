@@ -5,6 +5,11 @@ class Hl < Formula
   license "MIT"
   head "https://github.com/pamburus/hl.git", branch: "master"
 
+  livecheck do
+    url :stable
+    regex(/^v((?:0|[1-9]\d*)(?:\.(?:0|[1-9]\d*)){2})$/i)
+  end
+
   bottle do
     root_url "https://github.com/pamburus/homebrew-tap/releases/download/hl-0.35.2"
     sha256 cellar: :any_skip_relocation, arm64_tahoe:   "25f3aca865f7f50803a9ecae178156fbd5c3bbc9dd7cd63987aca081b745f606"
