@@ -176,7 +176,7 @@ jobs:
             brew bottle --merge --write --no-commit -- ./*.bottle.json
 
             # Commit changes
-            git add "Formula/$package.rb"
+            git add "Formula/$package.rb" "$src"
             git commit -m "$package: update to $version"
             git push origin ${{ github.ref_name }}
 
