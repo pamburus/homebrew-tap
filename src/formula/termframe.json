@@ -3,7 +3,7 @@
     "url": "https://github.com/pamburus/termframe",
     "branch": "main"
   },
-  "version": "0.7.4",
+  "version": "0.7.5",
   "assets": [
     {
       "name": "termframe-macos-arm64.tar.gz",
