@@ -228,7 +228,11 @@ def render(template, **env):
 def get(url):
     """Get the content of the URL."""
     logging.debug("GET %s", CYAN(url))
-    return urllib.request.urlopen(url)
+    token = os.environ.get("HOMEBREW_GITHUB_API_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    req = urllib.request.Request(url)
+    if token:
+        req.add_header("Authorization", f"Bearer {token}")
+    return urllib.request.urlopen(req)
 
 
 def prompt():
