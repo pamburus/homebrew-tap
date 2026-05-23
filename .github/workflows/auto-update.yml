@@ -75,6 +75,10 @@ jobs:
           key: ${{ runner.os }}-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: ${{ runner.os }}-rubygems-
 
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
       - name: Clean Homebrew core data
         run: |
           brew update
@@ -120,6 +124,10 @@ jobs:
 
       - uses: Homebrew/actions/setup-homebrew@master
       - uses: Homebrew/actions/git-user-config@master
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
 
       - name: Download all bottles
         uses: actions/download-artifact@v4
