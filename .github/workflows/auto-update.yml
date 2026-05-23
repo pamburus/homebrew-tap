@@ -25,6 +25,9 @@ defaults:
   run:
     shell: bash -euxo pipefail {0}
 
+env:
+  HOMEBREW_NO_SANDBOX_LINUX: "1"
+
 jobs:
   detect-updates:
     name: Detect updates
@@ -80,9 +83,12 @@ jobs:
       - name: Build bottle
         env:
           PACKAGE: ${{ github.repository }}/${{ matrix.update.package }}
+          FORMULA_NAME: ${{ matrix.update.package }}
           VERSION: ${{ matrix.update.version }}
         run: |
-          brew bump-formula-pr --write-only --version="$VERSION" --no-browse "$PACKAGE"
+          # Render the target formula version from the template without mutating
+          # the source spec in the per-runner checkout.
+          bin/tapctl.py sync --write-only --version "$VERSION" "$FORMULA_NAME"
           brew test-bot --only-cleanup-before
 
           # Workaround: Clean untracked files from homebrew-core (e.g., removed formulas like openssl@1.1)
@@ -169,9 +175,8 @@ jobs:
               fi
             done
 
-            # Update all platform URLs in the formula using tapctl
-            jq --arg ver "$version" '.version = $ver' "$src" > .pkg.tmp && mv .pkg.tmp "$src"
-            bin/tapctl.py -v sync --write-only "$package"
+            # Update the formula and persist the spec version once before commit.
+            bin/tapctl.py -v sync --write-only --version "$version" --update-spec "$package"
 
             brew bottle --merge --write --no-commit -- ./*.bottle.json
 

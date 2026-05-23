@@ -502,19 +502,32 @@ class Formula:
         files = glob.glob(os.path.join(FORMULA_SOURCE_DIR, "*.json"))
         return [os.path.basename(x.removesuffix(".json")) for x in files]
 
-    def sync(self, force=False, write_only=False):
+    def sync(
+        self,
+        force=False,
+        write_only=False,
+        version: str | None = None,
+        update_spec=False,
+    ):
         """Synchronize the formula with the latest release."""
-        if not force and self.version == self.target_version:
+        requested_version = version or self.version
+        if (
+            not force
+            and requested_version == self.target_version
+            and (not update_spec or self.version == requested_version)
+        ):
             logging.debug("%s: already up-to-date", self)
             return
         logging.info(
             "Updating %s from %s to %s",
             self,
             HL(self.target_version),
-            HL(self.version),
+            HL(requested_version),
         )
-        release = self.repo.release(self.version).resolved
+        self.set_spec_version(requested_version)
+        release = self.repo.release(requested_version).resolved
         version = release.version
+        self.set_spec_version(version, write_spec=update_spec)
         assets = self.assets(release.name)
         params = {
             "VERSION": version,
@@ -540,6 +553,16 @@ class Formula:
             )
         ):
             self.make_pull_request()
+
+    def set_spec_version(self, version: str, write_spec=False):
+        """Update the formula specification version."""
+        spec = dict(self.spec)
+        if spec["version"] == version and not write_spec:
+            return
+        spec["version"] = version
+        self.__dict__["spec"] = spec
+        if write_spec:
+            write(self.spec_file, json.dumps(spec, indent=2) + "\n")
 
     def make_pull_request(self):
         """Make a pull request for the formula."""
@@ -694,7 +717,12 @@ def sync(args):
     if not formulas:
         formulas = Formula.discover()
     for formula in map(Formula, formulas):
-        formula.sync(force=args.force, write_only=args.write_only)
+        formula.sync(
+            force=args.force,
+            write_only=args.write_only,
+            version=args.version,
+            update_spec=args.update_spec,
+        )
 
 
 def setup_logging(level: int = logging.INFO):
@@ -742,6 +770,16 @@ def setup_cli_command_sync(group):
         action="store_true",
         default=False,
         help="Only write the changes locally, do not commit and push",
+    )
+    command.add_argument(
+        "--version",
+        help="Render the formula for the specified release version",
+    )
+    command.add_argument(
+        "--update-spec",
+        action="store_true",
+        default=False,
+        help="Persist the resolved version to the formula specification file",
     )
 
     command.add_argument(
