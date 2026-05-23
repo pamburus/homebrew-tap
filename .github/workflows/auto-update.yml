@@ -80,9 +80,15 @@ jobs:
       - name: Build bottle
         env:
           PACKAGE: ${{ github.repository }}/${{ matrix.update.package }}
+          FORMULA_NAME: ${{ matrix.update.package }}
           VERSION: ${{ matrix.update.version }}
         run: |
-          brew bump-formula-pr --write-only --version="$VERSION" --no-browse "$PACKAGE"
+          # Update the formula spec version and regenerate the formula from the template.
+          # This replaces `brew bump-formula-pr --write-only` which cannot handle
+          # formulas with per-platform url stanzas inside on_macos/on_linux blocks.
+          src="src/formula/$FORMULA_NAME.json"
+          jq --arg ver "$VERSION" '.version = $ver' "$src" > .pkg.tmp && mv .pkg.tmp "$src"
+          bin/tapctl.py sync --write-only --force "$FORMULA_NAME"
           brew test-bot --only-cleanup-before
 
           # Workaround: Clean untracked files from homebrew-core (e.g., removed formulas like openssl@1.1)
