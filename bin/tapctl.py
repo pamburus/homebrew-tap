@@ -632,9 +632,17 @@ class Formula:
     @property
     def target_version(self):
         """The target version of the formula."""
-        pattern = re.compile(r"^\s*version\s+\"([\da-zA-Z\.]+)\"$")
-        for line in read(self.target_file).splitlines():
-            match = pattern.match(line)
+        version_pattern = re.compile(r"^\s*version\s+\"([\da-zA-Z\.]+)\"$")
+        url_pattern = re.compile(
+            r"^\s*url\s+\"[^\"]*/releases/download/v?([\da-zA-Z\.]+)/[^\"/]+\"$"
+        )
+        lines = read(self.target_file).splitlines()
+        for line in lines:
+            match = version_pattern.match(line)
+            if match:
+                return match.group(1)
+        for line in lines:
+            match = url_pattern.match(line)
             if match:
                 return match.group(1)
         command = [
