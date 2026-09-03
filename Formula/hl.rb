@@ -1,7 +1,6 @@
 class Hl < Formula
   desc "Log viewer for JSON and logfmt logs"
   homepage "https://github.com/pamburus/hl"
-  version "0.36.3"
   license "MIT"
   head "https://github.com/pamburus/hl.git", branch: "master"
 
