@@ -1,7 +1,6 @@
 class Termframe < Formula
   desc "Terminal output SVG screenshot tool"
   homepage "https://github.com/pamburus/termframe"
-  version "0.8.7"
   license "MIT"
   head "https://github.com/pamburus/termframe.git", branch: "main"
 
