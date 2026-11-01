@@ -12,6 +12,7 @@
   "semanticCommits": "enabled",
   "semanticCommitType": "build",
   "semanticCommitScope": "deps",
+  "prConcurrentLimit": 1,
   "homebrew": {
     "enabled": false
   },
