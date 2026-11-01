@@ -13,6 +13,9 @@
   "semanticCommitType": "build",
   "semanticCommitScope": "deps",
   "prConcurrentLimit": 1,
+  "schedule": [
+    "* */6 * * *"
+  ],
   "homebrew": {
     "enabled": false
   },
@@ -45,12 +48,9 @@
   ],
   "packageRules": [
     {
-      "description": "GitHub Actions: weekly on Saturday",
+      "description": "Label GitHub Actions updates",
       "matchManagers": [
         "github-actions"
-      ],
-      "schedule": [
-        "* * * * 6"
       ],
       "addLabels": [
         "github-actions"
@@ -77,9 +77,6 @@
       "description": "Tools pinned outside of action references",
       "matchManagers": [
         "custom.regex"
-      ],
-      "schedule": [
-        "* * * * 6"
       ],
       "addLabels": [
         "github-actions"
