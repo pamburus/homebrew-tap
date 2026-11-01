@@ -85,6 +85,21 @@
       ]
     },
     {
+      "description": "Automerge all updates once required checks pass",
+      "matchPackageNames": [
+        "*"
+      ],
+      "automerge": true,
+      "automergeStrategy": "squash"
+    },
+    {
+      "description": "The release dry run never requests an app token, so no check proves this action",
+      "matchPackageNames": [
+        "tibdex/github-app-token"
+      ],
+      "automerge": false
+    },
+    {
       "description": "Use `build` commit type for all updates, overriding the per-type defaults from `config:recommended`",
       "matchPackageNames": [
         "*"
