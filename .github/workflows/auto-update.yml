@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+  pull_request:
   workflow_dispatch:
     inputs:
       formulas:
@@ -24,6 +25,10 @@ permissions:
 defaults:
   run:
     shell: bash -euxo pipefail {0}
+
+# Pull requests rehearse a release: everything runs except pushing and publishing.
+env:
+  DRY_RUN: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   detect-updates:
@@ -46,6 +51,10 @@ jobs:
               updates=$(echo "$updates" | jq --arg pkg "$package" --arg ver "$version" '. += [{"package": $pkg, "version": $ver}]')
             done
           done
+          # New versions are rare, so a dry run rebuilds the current hl version.
+          if [[ "$DRY_RUN" == "true" ]]; then
+            updates=$(jq '[{"package": "hl", "version": .version}]' src/formula/hl.json)
+          fi
           updates_json=$(echo "$updates" | jq -c .)
           echo "updates=$updates_json" >> "${GITHUB_OUTPUT}"
 
@@ -132,8 +141,10 @@ jobs:
         with:
           path: bottles/
 
+      # Pull requests run unreviewed action updates, so they never get the app key.
       - name: Generate token
         id: generate-token
+        if: env.DRY_RUN != 'true'
         uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
         with:
           app_id: ${{ secrets.APP_ID }}
@@ -151,12 +162,15 @@ jobs:
           # Configure git in the tap directory
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "GitHub Actions"
-          git config url."https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/".insteadOf "https://github.com/"
 
-          # Fetch and checkout the correct branch
-          git fetch origin ${{ github.ref_name }}
-          git checkout ${{ github.ref_name }}
-          git pull origin ${{ github.ref_name }}
+          if [[ "$DRY_RUN" != "true" ]]; then
+            git config url."https://x-access-token:${{ steps.generate-token.outputs.token }}@github.com/".insteadOf "https://github.com/"
+
+            # Fetch and checkout the correct branch
+            git fetch origin ${{ github.ref_name }}
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+          fi
 
           for update in $(echo "$UPDATES" | jq -r '.[] | @base64'); do
             package=$(echo "$update" | base64 -d | jq -r '.package')
@@ -188,6 +202,18 @@ jobs:
 
             # Commit changes
             git add "Formula/$package.rb" "$src"
+
+            if [[ "$DRY_RUN" == "true" ]]; then
+              # A successful merge always changes the bottle block.
+              if git diff --cached --quiet; then
+                echo "::error::No formula changes for $package"
+                exit 1
+              fi
+              git diff --cached --stat
+              rm -f ./*.bottle.*
+              continue
+            fi
+
             git commit -m "$package: update to $version"
             git push origin ${{ github.ref_name }}
 
@@ -199,4 +225,20 @@ jobs:
 
             # Clean up bottle files for next iteration
             rm -f ./*.bottle.*
+          done
+
+  # A skipped job counts as passed for a required check, so this reports the
+  # real outcome of the rehearsal.
+  dry-run-result:
+    name: Release dry run
+    needs: [detect-updates, update-formula, integrate-bottles]
+    if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check results
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          for result in $RESULTS; do
+            [[ "$result" == "success" ]]
           done
