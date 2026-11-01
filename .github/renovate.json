@@ -1,0 +1,95 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "customManagers:githubActionsVersions",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "timezone": "Etc/UTC",
+  "labels": [
+    "dependencies"
+  ],
+  "semanticCommits": "enabled",
+  "semanticCommitType": "build",
+  "semanticCommitScope": "deps",
+  "homebrew": {
+    "enabled": false
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Homebrew/actions uses four-part tags, which the github-actions manager truncates and cannot update",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/.+\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "(?<depName>Homebrew/actions/[a-z-]+)@(?<currentDigest>[0-9a-f]{40}) # (?<currentValue>[0-9.]+)"
+      ],
+      "packageNameTemplate": "Homebrew/actions",
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\.(?<build>\\d+)$",
+      "autoReplaceStringTemplate": "{{{depName}}}@{{{newDigest}}} # {{{newValue}}}"
+    },
+    {
+      "customType": "regex",
+      "description": "Go tool that renders formula templates",
+      "managerFilePatterns": [
+        "/^bin/tapctl\\.py$/"
+      ],
+      "matchStrings": [
+        "\"(?<depName>github\\.com/bitnami/render-template)@(?<currentValue>v[0-9.]+)\""
+      ],
+      "datasourceTemplate": "go"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "GitHub Actions: weekly on Saturday",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "schedule": [
+        "* * * * 6"
+      ],
+      "addLabels": [
+        "github-actions"
+      ]
+    },
+    {
+      "description": "Homebrew/actions is handled by a custom manager",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "Homebrew/actions"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Group Homebrew actions",
+      "matchPackageNames": [
+        "Homebrew/actions"
+      ],
+      "groupName": "homebrew-actions"
+    },
+    {
+      "description": "Tools pinned outside of action references",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "schedule": [
+        "* * * * 6"
+      ],
+      "addLabels": [
+        "github-actions"
+      ]
+    },
+    {
+      "description": "Use `build` commit type for all updates, overriding the per-type defaults from `config:recommended`",
+      "matchPackageNames": [
+        "*"
+      ],
+      "semanticCommitType": "build"
+    }
+  ]
+}
