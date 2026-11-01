@@ -29,7 +29,7 @@ UPSTREAM_REPO = "https://github.com/pamburus/homebrew-tap"
 MAIN_BRANCH = "main"
 
 # Command to render the template.
-RENDER_COMMAND = ["go", "run", "github.com/bitnami/render-template@v1.0.6"]
+RENDER_COMMAND = ["go", "run", "github.com/bitnami/render-template@v1.0.10"]
 
 # Directories for the formula and the target.
 FORMULA_SOURCE_DIR = "src/formula"
