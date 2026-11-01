@@ -85,6 +85,14 @@
       ]
     },
     {
+      "description": "Automerge all updates once required checks pass",
+      "matchPackageNames": [
+        "*"
+      ],
+      "automerge": true,
+      "automergeStrategy": "squash"
+    },
+    {
       "description": "Use `build` commit type for all updates, overriding the per-type defaults from `config:recommended`",
       "matchPackageNames": [
         "*"
