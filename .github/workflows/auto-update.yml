@@ -18,8 +18,9 @@ concurrency:
   group: auto-update-${{ github.ref }}
   cancel-in-progress: false
 
+# Pull requests run unreviewed action updates, so writes go through the app token.
 permissions:
-  contents: write
+  contents: read
   actions: read
 
 defaults:
@@ -168,7 +169,7 @@ jobs:
       - name: Integrate all updates sequentially
         env:
           UPDATES: ${{ needs.detect-updates.outputs.updates }}
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token || github.token }}
         run: |
           # Work in Homebrew's tap directory where formulas are actually modified
           TAP_DIR="$(brew --repository)/Library/Taps/${{ github.repository }}"
