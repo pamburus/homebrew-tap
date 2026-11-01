@@ -141,14 +141,29 @@ jobs:
         with:
           path: bottles/
 
-      # Pull requests run unreviewed action updates, so they never get the app key.
+      # Pull requests run unreviewed action updates, so they only get the key of a
+      # read-only app. Forks receive no secrets and skip this check.
+      - name: Generate dry-run token
+        id: generate-dry-run-token
+        if: env.DRY_RUN == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          app-id: ${{ secrets.DRY_RUN_APP_ID }}
+          private-key: ${{ secrets.DRY_RUN_APP_PRIVATE_KEY }}
+
+      - name: Check dry-run token
+        if: steps.generate-dry-run-token.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ steps.generate-dry-run-token.outputs.token }}
+        run: gh api "repos/$GITHUB_REPOSITORY" --jq .full_name
+
       - name: Generate token
         id: generate-token
         if: env.DRY_RUN != 'true'
-        uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
       - name: Integrate all updates sequentially
         env:
