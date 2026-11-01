@@ -85,12 +85,13 @@
       ]
     },
     {
-      "description": "Automerge all updates once required checks pass",
+      "description": "Automerge all updates once required checks pass, after a release has had a week to be caught if compromised",
       "matchPackageNames": [
         "*"
       ],
       "automerge": true,
-      "automergeStrategy": "squash"
+      "automergeStrategy": "squash",
+      "minimumReleaseAge": "7 days"
     },
     {
       "description": "Use `build` commit type for all updates, overriding the per-type defaults from `config:recommended`",
