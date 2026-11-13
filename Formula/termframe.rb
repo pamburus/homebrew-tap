@@ -10,17 +10,17 @@ class Termframe < Formula
   end
 
   bottle do
-    root_url "https://github.com/pamburus/homebrew-tap/releases/download/termframe-0.10.0"
-    sha256 cellar: :any_skip_relocation, arm64_golden_gate: "6d87c5e219bba38ecb736b62363873d34b53abfbd74d0cf49035f804fb7bd1f7"
-    sha256 cellar: :any_skip_relocation, arm64_tahoe:       "7a2a91ef12fe72cc82200bb9d153a88242dd0931dd9bc270e610ff6d025aa998"
-    sha256 cellar: :any_skip_relocation, arm64_sequoia:     "e52d41929a6fe4e2fb4078e1cc49c9dd83c4074d6a7546a08f3231dfa07ead97"
-    sha256 cellar: :any_skip_relocation, x86_64_linux:      "75e6962c712df5da3c03a0d3b5c0eea7d65cd4b68945a0116f0cf9f8628f3792"
+    root_url "https://github.com/pamburus/homebrew-tap/releases/download/termframe-0.10.1"
+    sha256 cellar: :any_skip_relocation, arm64_golden_gate: "59e81b545cf22e26b366344a7ccfd477d348e6565acaf7e8363f20f7d86f969b"
+    sha256 cellar: :any_skip_relocation, arm64_tahoe:       "689e609c2ce3042833094913a4424f6a740edcbab98fa52ff570b22d961b8253"
+    sha256 cellar: :any_skip_relocation, arm64_sequoia:     "f78d2aa8eefac049a8bbb1e27af2ef7c142157415d7ab4fcc514ebaa84ab617d"
+    sha256 cellar: :any_skip_relocation, x86_64_linux:      "7611421651dccf5f6c8573d5b52398029deed4388acdfe65a73f98393f10fb28"
   end
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/pamburus/termframe/releases/download/v0.10.0/termframe-macos-x86_64.tar.gz"
-      sha256 "f5df75e7e5fcfe40e0fddfc66d1eb575895d6b7e88f362a778485955f06c3509"
+      url "https://github.com/pamburus/termframe/releases/download/v0.10.1/termframe-macos-x86_64.tar.gz"
+      sha256 "e15ad5c2097a18df8147d092962ce70d24683076b4e7bafca79e58688b0e1e51"
 
       define_method(:install) do
         bin.install "termframe"
@@ -29,8 +29,8 @@ class Termframe < Formula
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/pamburus/termframe/releases/download/v0.10.0/termframe-macos-arm64.tar.gz"
-      sha256 "be459f744ff2d064f8c494647b9a97e8f621e96b1e99971c3180dbaec59e0311"
+      url "https://github.com/pamburus/termframe/releases/download/v0.10.1/termframe-macos-arm64.tar.gz"
+      sha256 "5eca199789346988349b04869c4392ea6909f210a7db29f323b13a9e95cebcce"
 
       define_method(:install) do
         bin.install "termframe"
@@ -42,8 +42,8 @@ class Termframe < Formula
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/pamburus/termframe/releases/download/v0.10.0/termframe-linux-x86_64-musl.tar.gz"
-      sha256 "821302e1bddfda043a768211ab3f92cc51100313f2f73daf4f809cc33b88eb98"
+      url "https://github.com/pamburus/termframe/releases/download/v0.10.1/termframe-linux-x86_64-musl.tar.gz"
+      sha256 "6531eb5ed242d29499a9b5035110d0fdb8b0d002691552bf05a87675a475039e"
 
       define_method(:install) do
         bin.install "termframe"
@@ -52,8 +52,8 @@ class Termframe < Formula
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/pamburus/termframe/releases/download/v0.10.0/termframe-linux-arm64-musl.tar.gz"
-      sha256 "4d35fe9da11e7e752d44c021e68058c205439064ed17f2a84324e4cafb31bb4c"
+      url "https://github.com/pamburus/termframe/releases/download/v0.10.1/termframe-linux-arm64-musl.tar.gz"
+      sha256 "af30ff204f14c995bbd1283570d2775344e19b99306f679d4456e2ff84b5cdf7"
 
       define_method(:install) do
         bin.install "termframe"
